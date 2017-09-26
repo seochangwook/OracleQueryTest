@@ -16,10 +16,13 @@ COMMIT;
 /*--------------------------------------------------------------------*/
 /* DML */
 select * from userinfo;
+
 /* 유저 추가 (추후에 메일 수신동의 테이블과 같이 프로시저 태워서 추가)*/
 INSERT INTO userinfo(user_id, user_password, user_email, user_phonenumber, user_manage, user_reg_date, user_push_use)
 VALUES('scw3315', 'tjckd246!', 'scw05313315@gmail.com', '01042084757', 1, sysdate, 1);
 INSERT INTO userinfo(user_id, user_password, user_email, user_phonenumber, user_manage, user_reg_date, user_push_use)
 VALUES('scw0531', '1234', 'scw0531@naver.com', '01047243307', 0, sysdate, 1);
+INSERT INTO userinfo(user_id, user_password, user_email, user_phonenumber, user_manage, user_reg_date, user_push_use)
+VALUES('scw05313315', '1234', 'scw0531@sfsfd.com', '01011112222', 0, sysdate, 1);
 
 COMMIT;
