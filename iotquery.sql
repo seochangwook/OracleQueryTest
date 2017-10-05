@@ -20,8 +20,8 @@ CREATE TABLE sensorvalue(
   sensor_name VARCHAR2(150),
   sensor_value_1 VARCHAR2(50),
   sensor_value_2 VARCHAR2(50),
-  sensor_regDate DATE,
-  sensor_modifyDate VARCHAR2(150),
+  sensor_reg_date DATE,
+  sensor_modify_date VARCHAR2(150),
   PRIMARY KEY(sensor_id)
 );
 
