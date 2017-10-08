@@ -16,13 +16,14 @@ DESC userinfo;
 -- 센서값 테이블 생성(필요시 value를 추가하는 형태로 가변적 가능, 센서의 정보에 따라서 유동적) --
 -- 실제 센서의 스팩등의 세부사항은 센서 테이블을 참조하여 가져온다 --
 CREATE TABLE sensorvalue(
+  user_id VARCHAR2(50),
   sensor_id VARCHAR2(50),
   sensor_name VARCHAR2(150),
   sensor_value_1 VARCHAR2(50),
   sensor_value_2 VARCHAR2(50),
   sensor_reg_date DATE,
   sensor_modify_date VARCHAR2(150),
-  PRIMARY KEY(sensor_id)
+  PRIMARY KEY(sensor_id, user_id)
 );
 
 -- 
@@ -44,8 +45,27 @@ FROM sensorvalue;
 INSERT INTO userinfo 
 VALUES('scw3315', 'tjckd246!', '서창욱', '경기도 수원시 장안구 이목동 수원장안힐스테이트', '01042084757', 1);
 
+INSERT INTO userinfo 
+VALUES('scw0531', '1234', 'tester', '서울특별시 금천구 가산디지털단지', '01011112222', 0);
+
 -- 센서값 테이블 기초데이터 삽입 --
 INSERT INTO sensorvalue 
-VALUES('10001', 'temphumisensor', '', '', SYSDATE, '');
+VALUES('scw3315','10001', 'temphumisensor', '', '', SYSDATE, '');
+
+INSERT INTO sensorvalue 
+VALUES('scw0531','100021', 'lightsensor1', '', '', SYSDATE, '');
+
+-- 센서값 테이블 업데이트 --
+UPDATE sensorvalue 
+SET sensor_value_1 = '27', sensor_value_2 = '36', sensor_modify_date = SYSDATE 
+WHERE sensor_id = '10001' AND user_id = 'scw3315';
+
+-- 센서값 테이블 제거 --
+delete from sensorvalue where user_id = 'scw0531';
+
+-- 유저 상세 데이터 추출 --
+SELECT u.user_id, u.user_address, s.sensor_name
+FROM userinfo u, sensorvalue s
+WHERE u.user_id = s.user_id AND u.user_id = 'scw3315';
 
 /* PROCEDURE */
