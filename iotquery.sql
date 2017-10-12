@@ -26,6 +26,9 @@ CREATE TABLE sensorvalue(
   PRIMARY KEY(sensor_id, user_id)
 );
 
+-- 테이블 구조 변경 --
+ALTER TABLE sensorvalue ADD(sensor_value_3 VARCHAR2(50));
+
 -- 
 
 DROP TABLE sensorvalue;
