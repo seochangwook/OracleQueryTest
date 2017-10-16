@@ -68,7 +68,10 @@ WHERE sensor_id = '10001' AND user_id = 'scw3315';
 ROLLBACK;
 
 -- 센서값 테이블 제거 --
-delete from sensorvalue where sensor_id = '100021';
+delete from sensorvalue where user_id = 'scw3314';
+
+-- 유저테이블 제거 --
+delete from userinfo where user_id = 'scw3314';
 
 -- 유저 상세 데이터 추출 --
 SELECT u.user_id, u.user_address, s.sensor_name, u.USER_NAME, u.USER_PHONENUMBER
@@ -77,3 +80,58 @@ WHERE u.user_id = s.user_id AND u.user_id = 'scw3315';
 
 /* PROCEDURE */
 -- 회원가입 로직(센서 유무 선택에 따른 센서 테이블 등록) --
+CREATE OR REPLACE PROCEDURE ENROLL_USER 
+(
+  IN_ENROLL_TYPE IN INTEGER,
+  IN_USER_ID IN USERINFO.USER_ID%TYPE,
+  IN_USER_PSWD IN USERINFO.USER_PSWD%TYPE, 
+  IN_USER_NAME IN USERINFO.USER_NAME%TYPE, 
+  IN_USER_ADDRESS IN USERINFO.USER_ADDRESS%TYPE, 
+  IN_USER_PHONENUMBER IN USERINFO.USER_PHONENUMBER%TYPE, 
+  IN_MAIL_PUSH IN USERINFO.MAILPUSH_USE%TYPE, 
+  IN_ROLE IN USERINFO.ROLE%TYPE,
+  OUT_RESULT_VALUE OUT VARCHAR2
+)
+IS
+-- 커서정의, 사용할 변수 정의
+v_result_col NUMBER;
+BEGIN
+  IF IN_ENROLL_TYPE = 1 THEN -- 중복로그인 검사 --
+    DBMS_OUTPUT.PUT_LINE('중복로그인 검사');
+    SELECT 
+      COUNT(*) INTO v_result_col 
+    FROM 
+      USERINFO
+    WHERE
+      USERINFO.USER_ID = IN_USER_ID;
+    IF v_result_col >= 1 THEN
+      OUT_RESULT_VALUE := 0;
+      DBMS_OUTPUT.PUT_LINE('이미 존재하는 ID입니다');
+    ELSIF v_result_col = 0 THEN
+      OUT_RESULT_VALUE := 1;
+      DBMS_OUTPUT.PUT_LINE('사용가능한 ID입니다');
+    END IF;
+    DBMS_OUTPUT.PUT_LINE('result: ' || OUT_RESULT_VALUE);
+  ELSIF IN_ENROLL_TYPE = 2 THEN -- 회원가입 --
+    -- 유저테이블 insert --
+    INSERT INTO userinfo 
+    VALUES(IN_USER_ID, IN_USER_PSWD, IN_USER_NAME, IN_USER_ADDRESS, IN_USER_PHONENUMBER, IN_MAIL_PUSH, IN_ROLE);
+    
+    --관련 센서 테이블 추가 --
+    INSERT INTO sensorvalue 
+    VALUES(IN_USER_ID,'10001', 'temphumisensor', '', '', '', SYSDATE, '');
+
+    INSERT INTO sensorvalue 
+    VALUES(IN_USER_ID,'10002', 'lightsensor', '', '','', SYSDATE, '');
+    
+    COMMIT;
+    
+    OUT_RESULT_VALUE := 1;
+  ELSE
+    OUT_RESULT_VALUE := '-1';
+  END IF;
+EXCEPTION -- 예외처리
+WHEN OTHERS THEN
+  OUT_RESULT_VALUE := '-1';
+  ROLLBACK;
+END;
